@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+    <welcome-file-list>
+        <!--默认请求index.html 会被dispatchServlet拦截*.html请求
+            进入@RequestMapping("/index")的Handler中处理返回index.jsp
+            实现伪静态化
+        -->
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+
+</web-app>

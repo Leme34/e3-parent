@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+
+	<!--      商城主页的后台管理微服务impl   -->
+
+
+
+	<groupId>com.Lee</groupId>
+	<artifactId>e3-content-service</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>e3-content-service</name>
+	<description>Demo project for Spring Boot</description>
+
+	<parent>
+		<groupId>com.Lee</groupId>
+		<artifactId>e3-content</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>groupId</groupId>
+            <artifactId>e3-content-interface</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+		<dependency>
+			<groupId>com.Lee</groupId>
+			<artifactId>e3-common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.Lee</groupId>
+			<artifactId>e3-manager-dao</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.Lee</groupId>
+			<artifactId>e3-manager-pojo</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- 解决@ConfigurationProperties(prefix = "xxx")从配置文件注入属性报错问题 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- 整合redis -->
+		<!--<dependency>-->
+			<!--<groupId>org.springframework.boot</groupId>-->
+			<!--<artifactId>spring-boot-starter-data-redis</artifactId>-->
+			<!--<version>1.5.9.RELEASE</version>-->
+		<!--</dependency>-->
+
+
+
+	</dependencies>
+
+
+
+
+</project>

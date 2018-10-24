@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.Lee.dao.ItemMapper" >
+  
+  <select id="getItemList" resultType="com.Lee.dto.SearchItemDTO">
+    SELECT
+        a.id,
+        a.title,
+        a.sell_point,
+        a.price,
+        a.image,
+        b.`name` category_name
+    FROM
+        tb_item a
+        LEFT JOIN tb_item_cat b ON a.cid = b.id
+    WHERE
+        a.`status` = 1;  #只查询正常状态的商品
+  </select>
+
+
+  <select id="getItemById" parameterType="long" resultType="com.Lee.dto.SearchItemDTO">
+    SELECT
+        a.id,
+        a.title,
+        a.sell_point,
+        a.price,
+        a.image,
+        b.`name` category_name
+    FROM
+        tb_item a
+        LEFT JOIN tb_item_cat b ON a.cid = b.id
+    WHERE
+        a.`status` = 1  #只查询正常状态的商品
+    AND a.id=#{itemId}
+  </select>
+
+</mapper>

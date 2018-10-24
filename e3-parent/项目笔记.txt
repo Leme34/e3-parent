@@ -1,0 +1,50 @@
+一、架构（dubbo实现微服务架构）
+1、前台系统e3-portal-web    (首页访问量最大，单独抽取成一个系统)
+2、后台管理系统e3-manager   （商品加入缓存和solr索引集群）
+3、搜索系统e3-search    （solr集群）
+4、会员系统e3-sso      (注册、单点登录)
+5、商品详细页e3-item-web     （监听消息生成静态页面，加入缓存）
+
+二、虚拟机：
+1 、192.168.11.101有dubbo集群以及注册中心zookeeper、redis伪分布式集群(6台)、fdfs图片服务器集群(需要先启动nginx:/usr/local/nginx/sbin/nginx)
+2 、192.168.11.102有solr集群和管理solr集群的zookeeper集群、ActiveMQ(启动命令:/root/apache-activemq-5.12.0/bin/activemq start)
+
+windows：
+1、启动nginx
+
+三、业务流程：
+1、e3-content工程中redis集群对商城首页item进行了缓存
+
+2、e3-manager-service工程中的新增商品向消息队列发送此tbItem的id，
+在e3-search-service工程中监听消息，查询数据库得到此商品信息dto对象索引到solr集群
+
+3、对商城主页item使用redis的哈希缓存，对商品详细页因为要设置缓存时间(减少冷门商品占用内存)而只能使用string类型缓存，使用自定义前后缀和":"分隔的key来分类(避免key冲突)
+
+4、商城管理后台添加商品的时候监听消息队列(Freemarker)生成静态页面，可以保存到磁盘任意位置，在windows使用nginx访问静态页面(性能比tomcat好)
+
+5、因为要设置过期时间(模拟cookie保持登录状态)所以要以string类型把用户信息写入redis，key：token value：用户信息
+
+6、拦截器:若已登录则把用户信息放入request域中(与过滤器后的handler使用的是同一request对象，取用户id作为redis中的field)，放行。否则未登录或过期直接放行。
+
+7、若添加购物车是已登录状态则把购物车列表存入redis中。数据类型是hash key："CART:用户id" , field："商品id" , value："商品信息"
+   若未登录则存入cookie中
+
+
+四、基础知识点：
+1、分布式session：
+  单服务器web应用中，session信息只需存在该服务器中，这是我们前几年最常接触的方式，
+  但是近几年随着分布式系统的流行，单系统已经不能满足日益增长的百万级用户的需求，集群方式部署服务器已在很多公司运用起来，当高并发量的请求到达服务端的时候通过负载均衡的方式(nginx)分发到集群中的某个服务器，
+  这样就有可能导致同一个用户的多次请求被分发到集群的不同服务器上，就会出现取不到session数据的情况，于是session的共享就成了一个问题。
+
+      解决方案：
+        (1)key=UUID(作为sessionId)，value=user对象(需set密码为空)保存到redis集群
+        (2)保存此sessionId到cookie中，服务器端取出请求的cookie中的sessionId查询缓存以判断用户登录状态。
+2、客户端用cookie保存了sessionID，当我们请求服务器的时候，会把这个sessionID一起发给服务器，服务器会到内存中搜索对应的sessionID，如果找到了对应的 sessionID，说明我们处于登录状态。
+      因此我们要把自己生成的(分布式session的)sessionId保存到cookie中
+
+3、cookie域与跨域访问：
+domain表示的是cookie所在的域，默认为请求的地址，如网址为www.jb51.net/test/test.aspx，那么domain默认为www.jb51.net。
+而跨域访问，如域A为t1.test.com，域B为t2.test.com，那么在域A生产一个令域A和域B都能访问的cookie就要将该cookie的domain设置为.test.com；如果要在域A生产一个令域A不能访问而域B能访问的cookie就要将该cookie的domain设置为t2.test.com。
+
+4、浏览器有跨域访问限制：ip不同或者端口不同都算跨域
+解决办法：jsonp实现跨域访问
